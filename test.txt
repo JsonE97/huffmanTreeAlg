@@ -1,0 +1,4 @@
+this is a test
+file for huffman
+tree algorithm to reduce
+the file size
