@@ -3,35 +3,47 @@ public class Node {
 
 	private char letter; // label on incoming branch
 	private int weight;
-	
-	/** create a new node with letter c */
-	public Node(char c){
-		letter = c;
-		weight = 0;
-	}
-	
-	
 
-	// accessors
+	/**
+	 * Node Constructor
+	 * @param c - character for the new node
+	 */
+	public Node(char c){
+		this.letter = c;
+		this.weight = 0;
+	}
+
+
+	/**
+	 * Public Getters
+	 */
 	public char getLetter(){
-    	return letter;
+    	return this.letter;
     }
 	
 	public int getWeight(){
-		return weight;
+		return this.weight;
 	}
-	
-	
-	// mutators
+
+
+	/**
+	 * Public Setters
+	 */
+
+	/**
+	 *
+	 * @param c - new char for the current node
+	 */
 	public void setLetter(char c){
-    	letter = c;
+    	this.letter = c;
     }
-	
-	
+
+	/**
+	 *
+	 * @param f - new frequency for the weight of the node
+	 */
 	public void setWeight(int f){
-		weight = f;
-		
+		this.weight = f;
 	}
-    
 }
 
