@@ -7,91 +7,95 @@ import java.util.*;
  */
 
 public class HuffmanAlg {
-    static private long fileSize = 0;
-    private String inFile;
-    private HashMap<Character, Integer> charMap;
-    private ArrayList<Node> leafNodes;
+
+    /**
+     * Class attributes
+     */
+    private long fileSize;                          // size of the file in chars
+    private String inFile;                          // string representing path of file to read in
+    private HashMap<Character, Integer> charMap;    // character -> num occurrences hash map
+    private ArrayList<Node> leafNodes;              // array list of leaf nodes for tree
+
+    /**
+     * HuffmanAlg - Constructor
+     *
+     * @param inFile - String - path name for file to read in
+     */
 
     public HuffmanAlg(String inFile) {
+        this.fileSize = 0;
         this.inFile = inFile;
         this.charMap = new HashMap<>();
         this.leafNodes = new ArrayList<>();
     }
 
+    /**
+     * createMap - class instance method to generate the token -> occurrences hash map
+     *
+     * @throws IOException - when file path invalid or failure with reading in
+     */
+
     public void createMap() throws IOException {
+
+        // actually setup the file scanner
         FileReader reader = new FileReader(this.inFile);
         Scanner in = new Scanner(reader);
-        int newLineCount = 0;
-        int charCount = 0;
+
+        int newLineCount = 0;   // newline character frequency also needs stored in hashmap
 
         String line = in.nextLine();
-        while (line != null) {
-
+        while ((line != null) && !line.isEmpty()) {
             newLineCount++;
-            fileSize++;
-            charCount++;
-            if (!line.isEmpty()) {
-                //iterate through all the characters in each line
-                for (int i = 0; i < line.length(); i++) {
-                    charCount++;
-                    fileSize++;
-                    char c = line.charAt(i);
-                    //if the char is not in the hash map then add it to it, otherwise increment its frequency count
-                    if (this.charMap.get(c) == null) {
-                        this.charMap.put(c, 1);
-                    } else {
-                        int count = this.charMap.get(c);
-                        count = count + 1;
-                        this.charMap.put(c, count);
-                    }
+            this.fileSize++;
+            //iterate through all the characters in each line
+            for (int i = 0; i < line.length(); i++) {
+                this.fileSize++;
+                char c = line.charAt(i);
+                //if the char is not in the hash map then add it to it, otherwise increment its frequency count
+                if (this.charMap.get(c) == null) {
+                    this.charMap.put(c, 1);
+                } else {
+                    int count = this.charMap.get(c);
+                    this.charMap.put(c, count + 1);
                 }
             }
-            if (in.hasNextLine()) {
-                line = in.nextLine();
-            } else {
-                line = null;
-            }
+            line = in.hasNextLine() ? in.nextLine() : null;
         }
         this.charMap.put('\n', newLineCount);
-        reader.close();
+        reader.close();     // close resources
         in.close();
     }
 
-    /*
-     * method which maps each key value pair to a node in an array list using an iterator
+    /**
+     * getLeafNodes - method which maps each key value pair to a node in an array list using an iterator
      */
+
     public void getLeafNodes() {
-
-        //creates an iterator over the hashmap
-        Iterator<?> it = charMap.entrySet().iterator();
-        while(it.hasNext()){
-            //for each element, a pair is generated from the entry and from this a node is created with the weight assigned py the pair value
-            @SuppressWarnings("unchecked")
-            Map.Entry<Character,Integer> pair = (Map.Entry<Character, Integer>)it.next();
-            Node n = new Node(pair.getKey());
-            int f = pair.getValue();
-            n.setWeight(f);
-            //add each new node to the arraylist
-            this.leafNodes.add(n);
-
+        Iterator it = charMap.entrySet().iterator();    // create an iterator over the hashmap
+        while (it.hasNext()) {
+            Map.Entry<Character, Integer> pair = (Map.Entry<Character, Integer>) it.next();
+            Node node = new Node(pair.getKey());
+            int freq = pair.getValue();
+            node.setWeight(freq);
+            this.leafNodes.add(node);
         }
     }
 
-    /*
-     * method to obtain the weight of the internal nodes of a tree so the tree does not need to be built for efficiency
+    /**
+     * getWeight - method to obtain the weight of the internal nodes of a tree
+     * so the tree does not need to be built for efficiency
+     *
+     * @param leafNodes - ArrayList<Node> - list of leaf nodes
      */
-    public long getWeight(ArrayList<Node> leafNodes){
-
+    public long getWeight(ArrayList<Node> leafNodes) {
         long weight = 0;
-
-        //loop until there is only one node left in the list
-        while(leafNodes.size() > 1){
-            Node newNode = new Node('\0');
-            Node x = leafNodes.get(0);
-            Node y = leafNodes.get(1);
+        while (leafNodes.size() > 1) {      //loop until there is only one node left in the list
+            Node newNode = new Node();
+            Node nodeX = leafNodes.get(0);
+            Node nodeY = leafNodes.get(1);
 
             //assign the new weight of the parent node to the combined weights of the 2 minimum children
-            int w = x.getWeight() + y.getWeight();
+            int w = nodeX.getWeight() + nodeY.getWeight();
             newNode.setWeight(w);
 
             //remove the 2 minimum weights
@@ -105,48 +109,59 @@ public class HuffmanAlg {
         return weight;
     }
 
-    /*
-     * method to insert in order so the arraylist doesn't need to be sorted continuously
+    /**
+     * insert - method to insert in order so the arraylist doesn't need to be sorted continuously
+     *
+     * @param leafNodes - ArrayList<Node> - array list of leaf nodes
+     * @param newNode   - Node            - new node to be inserted in order
+     * @return leafNodes - ArrayList<Node> - new list of leaf nodes
      */
 
-    public ArrayList<Node> insert(ArrayList<Node> leafNodes, Node newNode){
+    public ArrayList<Node> insert(ArrayList<Node> leafNodes, Node newNode) {
         //if the arraylist of nodes is empty just add the node to it
-        if(leafNodes.size() == 0){
+        if (leafNodes.isEmpty()) {
             leafNodes.add(newNode);
-        }else{
+        } else {
             //else loop through the array list and add it at its appropriately sorted index
             boolean added = false;
-            for(int i = 0; i < leafNodes.size(); i++){
-                if(newNode.getWeight() < leafNodes.get(i).getWeight()){
+            for (int i = 0; i < leafNodes.size() && !added; i++) {
+                if (newNode.getWeight() < leafNodes.get(i).getWeight()) {
                     leafNodes.add(i, newNode);
                     added = true;
-                    break;
                 }
-
             }
-            //this if statement is run incase the new node is greater than all the nodes in the array list, so it's just added at the end
-            if(!added){
+            if (!added) {
                 leafNodes.add(newNode);
             }
-
         }
         return leafNodes;
     }
 
-    public ArrayList<Node> sortLeafNodes(){
+    /**
+     * sortLeafNodes - does a final sort on the array of leaf nodes - shouldn't require much
+     *
+     * @return - new array list of sorted leaf nodes
+     */
+
+    public ArrayList<Node> sortLeafNodes() {
         ArrayList<Node> newNodes = new ArrayList<Node>();
         newNodes = (ArrayList<Node>) this.leafNodes.clone();
 
-        Collections.sort(newNodes, new Comparator<Node>(){
-            public int compare(Node o1, Node o2){
+        Collections.sort(newNodes, new Comparator<Node>() {
+            public int compare(Node o1, Node o2) {
                 return o1.getWeight() - o2.getWeight();
             }
         });
         return newNodes;
     }
 
+    /**
+     * getFileSize - quick getter to do calculations
+     *
+     * @return fileSize - long - size of file by number of chars
+     */
 
-    public long getFileSize(){
+    public long getFileSize() {
         return fileSize;
     }
 }
