@@ -5,7 +5,6 @@ import java.util.*;
  * program to find compression ratio using Huffman coding algorithm
  */
 public class Main {
-
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         String inputFileName = "";
@@ -17,17 +16,7 @@ public class Main {
         }
         if (!inputFileName.isEmpty()) {
             HuffmanAlg hf = new HuffmanAlg(inputFileName);
-            hf.createMap();
-            //create an arraylist of nodes
-
-            hf.getLeafNodes();
-            //sorts the array list of leaf nodes in increasing order of weight using collections class
-
-            ArrayList<Node> sortedNodes = hf.sortLeafNodes();
-
-            //gets the WPL by getting the sum of the weight of the internal nodes
-            long WPL = hf.getWeight(sortedNodes);
-
+            long WPL = hf.performAlgorithm();
             try {
                 outputFileName = args[1];
                 FileWriter writer = new FileWriter(outputFileName);
@@ -44,9 +33,6 @@ public class Main {
             } catch (Exception e) {
                 System.out.println("No output file given");
             }
-
         }
-
     }
-
 }

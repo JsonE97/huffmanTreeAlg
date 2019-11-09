@@ -30,6 +30,20 @@ public class HuffmanAlg {
     }
 
     /**
+     * performAlgorithm
+     * @return WPL - long   - the final weighted path length of the huffman tree
+     * @throws IOException  - since createMap throws a potential exception
+     */
+
+    public long performAlgorithm() throws IOException {
+        this.createMap();
+        this.getLeafNodes();
+        ArrayList<Node> sortedNodes = this.sortLeafNodes();
+        long WPL = this.getWeight(sortedNodes);
+        return WPL;
+    }
+
+    /**
      * createMap - class instance method to generate the token -> occurrences hash map
      *
      * @throws IOException - when file path invalid or failure with reading in
