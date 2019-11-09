@@ -16,7 +16,8 @@ public class Main {
         }
         if (!inputFileName.isEmpty()) {
             HuffmanAlg hf = new HuffmanAlg(inputFileName);
-            long WPL = hf.performAlgorithm();
+            hf.performAlgorithm();
+            long WPL = hf.getWeightedPathLength();
             try {
                 outputFileName = args[1];
                 FileWriter writer = new FileWriter(outputFileName);

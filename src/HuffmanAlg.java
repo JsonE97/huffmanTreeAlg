@@ -15,6 +15,7 @@ public class HuffmanAlg {
     private String inFile;                          // string representing path of file to read in
     private HashMap<Character, Integer> charMap;    // character -> num occurrences hash map
     private ArrayList<Node> leafNodes;              // array list of leaf nodes for tree
+    private long wpl;
 
     /**
      * HuffmanAlg - Constructor
@@ -27,20 +28,19 @@ public class HuffmanAlg {
         this.inFile = inFile;
         this.charMap = new HashMap<>();
         this.leafNodes = new ArrayList<>();
+        this.wpl = 0;
     }
 
     /**
      * performAlgorithm
-     * @return WPL - long   - the final weighted path length of the huffman tree
      * @throws IOException  - since createMap throws a potential exception
      */
 
-    public long performAlgorithm() throws IOException {
+    public void performAlgorithm() throws IOException {
         this.createMap();
         this.getLeafNodes();
         ArrayList<Node> sortedNodes = this.sortLeafNodes();
-        long WPL = this.getWeight(sortedNodes);
-        return WPL;
+        this.getWeight(sortedNodes);
     }
 
     /**
@@ -49,7 +49,7 @@ public class HuffmanAlg {
      * @throws IOException - when file path invalid or failure with reading in
      */
 
-    public void createMap() throws IOException {
+    private void createMap() throws IOException {
 
         // actually setup the file scanner
         FileReader reader = new FileReader(this.inFile);
@@ -84,7 +84,7 @@ public class HuffmanAlg {
      * getLeafNodes - method which maps each key value pair to a node in an array list using an iterator
      */
 
-    public void getLeafNodes() {
+    private void getLeafNodes() {
         Iterator it = charMap.entrySet().iterator();    // create an iterator over the hashmap
         while (it.hasNext()) {
             Map.Entry<Character, Integer> pair = (Map.Entry<Character, Integer>) it.next();
@@ -101,7 +101,7 @@ public class HuffmanAlg {
      *
      * @param leafNodes - ArrayList<Node> - list of leaf nodes
      */
-    public long getWeight(ArrayList<Node> leafNodes) {
+    private void getWeight(ArrayList<Node> leafNodes) {
         long weight = 0;
         while (leafNodes.size() > 1) {      //loop until there is only one node left in the list
             Node newNode = new Node();
@@ -120,7 +120,7 @@ public class HuffmanAlg {
             leafNodes = insert(leafNodes, newNode);
             weight += newNode.getWeight();
         }
-        return weight;
+        this.wpl = weight;
     }
 
     /**
@@ -131,7 +131,7 @@ public class HuffmanAlg {
      * @return leafNodes - ArrayList<Node> - new list of leaf nodes
      */
 
-    public ArrayList<Node> insert(ArrayList<Node> leafNodes, Node newNode) {
+    private ArrayList<Node> insert(ArrayList<Node> leafNodes, Node newNode) {
         //if the arraylist of nodes is empty just add the node to it
         if (leafNodes.isEmpty()) {
             leafNodes.add(newNode);
@@ -157,7 +157,7 @@ public class HuffmanAlg {
      * @return - new array list of sorted leaf nodes
      */
 
-    public ArrayList<Node> sortLeafNodes() {
+    private ArrayList<Node> sortLeafNodes() {
         ArrayList<Node> newNodes = new ArrayList<Node>();
         newNodes = (ArrayList<Node>) this.leafNodes.clone();
 
@@ -176,7 +176,16 @@ public class HuffmanAlg {
      */
 
     public long getFileSize() {
-        return fileSize;
+        return this.fileSize;
     }
+
+    /**
+     * @return - long - the weighted path long of the huffman tree
+     */
+
+    public long getWeightedPathLength() {
+        return this.wpl;
+    }
+
 }
 
